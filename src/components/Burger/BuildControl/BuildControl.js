@@ -17,12 +17,17 @@ const buildControl = (props) => {
                 return <Element
                     add={() => props.ingredientAdded(control.type)}
                     remove={() => props.ingredientRemoved(control.type)}
-                    disable={props.disable[control.type] }
+                    disable={props.disable[control.type]}
                     key={control.label}
                     label={control.label}
                 />
             })}
-            <button disabled={!props.purchaseable} className={classCSS.OrderButton}>ORDER NOW</button>
+            <button
+                disabled={!props.purchaseable}
+                className={classCSS.OrderButton}
+                onClick={props.order}>
+                ORDER NOW
+            </button>
         </div>
     );
 };
