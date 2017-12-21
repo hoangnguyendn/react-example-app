@@ -3,7 +3,7 @@ import Logo from '../Logo/Logo';
 import NavigationItems from '../Navigation/NavigationItems/NavigationItems';
 import classCSS from './SiteDrawer.css';
 import Backdrop from '../UI/Backdrop/Backdrop';
-import Aux from '../../hoc/Aux';
+import Aux from '../../hoc/Aux/Aux';
 
 const siteDrawer = (props) => {
     return (
