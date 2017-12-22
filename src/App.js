@@ -14,7 +14,7 @@ class App extends Component {
             <BrowserRouter>
                 <Layout>
                     <Switch>
-                        <Route path="/checkout" component={Checkout}/>
+                        <Route path="/checkout"  component={Checkout}/>
                         <Route path="/" exact component={BugerBuilder}/>
                     </Switch>
                 </Layout>
