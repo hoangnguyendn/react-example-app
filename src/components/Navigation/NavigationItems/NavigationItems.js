@@ -8,8 +8,8 @@ const navigationItems = () => {
                             >
                 Burger Builder
             </NavigationItem>
-            <NavigationItem link="/checkout">
-                Checkout
+            <NavigationItem link="/order-list">
+                Order List
             </NavigationItem>
         </ul>
     );

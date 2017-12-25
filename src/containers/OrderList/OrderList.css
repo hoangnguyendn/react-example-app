@@ -1,0 +1,17 @@
+.OrderList {
+    margin: 20px auto;
+    width: 80%;
+    text-align: center;
+    box-shadow: 0 2px 3px #ccc;
+    border: 1px solid #eee;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.OrderList span {
+    margin-right: 5px;
+    box-shadow: 0 1px 1px #ccc;
+    border: 2px solid #e8e8e8;
+    padding: 10px;
+    box-sizing: border-box;
+}
