@@ -5,6 +5,7 @@ import axios from '../../../axios-orders';
 import Modal from '../../../components/UI/Modal/Modal';
 import Spinner from '../../../components/UI/Spinner/Spinner';
 import Input from '../../../components/UI/Input/Input';
+import WithErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler';
 
 class ContactData extends Component {
 
@@ -16,6 +17,11 @@ class ContactData extends Component {
                     type: 'text',
                     placeholder: 'Your Name',
                 },
+                validation: {
+                    required: true
+                },
+                valid: false,
+                focus: false,
                 value: ''
             },
             email: {
@@ -24,6 +30,11 @@ class ContactData extends Component {
                     type: 'email',
                     placeholder: 'Your Email',
                 },
+                validation: {
+                    required: true
+                },
+                valid: false,
+                focus: false,
                 value: ''
             },
             country: {
@@ -32,6 +43,11 @@ class ContactData extends Component {
                     type: 'email',
                     placeholder: 'Your Country',
                 },
+                validation: {
+                    required: true
+                },
+                valid: false,
+                focus: false,
                 value: ''
             },
             street: {
@@ -40,6 +56,11 @@ class ContactData extends Component {
                     type: 'text',
                     placeholder: 'Your Address',
                 },
+                validation: {
+                    required: true
+                },
+                valid: false,
+                focus: false,
                 value: ''
             },
             deliveryMethod: {
@@ -51,15 +72,20 @@ class ContactData extends Component {
                         {value: 'Bike', display: 'Bike'}
                     ],
                 },
-                value: ''
+                value: 'Plane'
             }
+        },
+        submit: {
+            disabled: true
         },
         totalPrice: null,
         ingredients: null,
-        loading: false
+        loading: false,
+        success: false
     };
 
     componentDidMount() {
+        //console.log(this.props);
         if (typeof this.props.ingredients !== "undefined") {
             this.setState({
                 ingredients: this.props.ingredients,
@@ -67,6 +93,17 @@ class ContactData extends Component {
             })
         }
     }
+
+    checkValidation = (values, rules) => {
+        let isValid = false;
+        if (!rules) {
+            return true;
+        }
+        if (rules.required) {
+            isValid = values.trim() !== '';
+        }
+        return isValid;
+    };
 
     handleInput = (type) => event => {
         // const {data} = this.state.customer;
@@ -84,6 +121,9 @@ class ContactData extends Component {
 
         const orderForm = {...this.state.orderForm};
         orderForm[type].value = event.target.value;
+        orderForm[type].valid = this.checkValidation(event.target.value, orderForm[type].validation);
+        orderForm[type].focus = true;
+        //console.log(orderForm[type]);
         this.setState({orderForm: orderForm});
     };
 
@@ -102,16 +142,16 @@ class ContactData extends Component {
         };
         axios.post('/orders.json', order)
             .then(res => {
-                //console.log(res);
                 this.setState({
                     loading: false,
                 });
+                setTimeout(() => {
+                    this.props.history.push('/');
+                }, 3000)
             })
             .catch(err => {
-                //console.log(err);
                 this.setState({
-                    loading: false,
-                    order: false
+                    loading: false
                 });
             });
     };
@@ -130,6 +170,9 @@ class ContactData extends Component {
                 <Modal show={this.state.loading}>
                     <Spinner/>
                 </Modal>
+                <Modal show={this.state.success}>
+                    <b>Order Successfully</b>
+                </Modal>
                 <h4>Please fill out this form</h4>
                 {formElementArray.map(form => {
                     return <Input key={form.id}
@@ -137,9 +180,12 @@ class ContactData extends Component {
                                   type={form.config.elementConfig.type}
                                   placeholder={form.config.elementConfig.placeholder}
                                   options={form.config.elementConfig.options}
-                                  change={this.handleInput(form.id)}/>
+                                  change={this.handleInput(form.id)}
+                                  shouldValidate={form.config.validation}
+                                  invalid={!form.config.valid}
+                                  touched={form.config.focus}/>
                 })}
-                <Button action={'Success'} clicked={this.submitOrder}>
+                <Button disabled={this.state.submit.disabled} action={'Success'} clicked={this.submitOrder}>
                     Submit
                 </Button>
 
@@ -150,4 +196,4 @@ class ContactData extends Component {
 
 }
 
-export default ContactData;
+export default WithErrorHandler(ContactData, axios);

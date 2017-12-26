@@ -15,11 +15,14 @@ class Checkout extends Component {
     };
 
     componentDidMount() {
+        //console.log(this.props);
         if (typeof this.props.location.state !== "undefined") {
             this.setState({
                 ingredients: this.props.location.state.ingredients,
                 totalPrice: this.props.location.state.totalPrice
             })
+        }else {
+            this.props.history.push('/');
         }
     }
 
@@ -28,7 +31,7 @@ class Checkout extends Component {
     };
 
     checkoutContinue = () => {
-        this.props.history.replace('/checkout/contact-data');
+        this.props.history.push('/checkout/contact-data');
     };
 
     render() {
@@ -40,8 +43,10 @@ class Checkout extends Component {
                                  checkoutContinue={this.checkoutContinue}
                                  ingredients={this.state.ingredients}/>
                 <Route path={this.props.match.path + '/contact-data'}
-                       component={() => <ContactData ingredients={this.state.ingredients}
-                                                     totalPrice={this.state.totalPrice}/>}/>
+                       component={() => <ContactData
+                           history={this.props.history}
+                           ingredients={this.state.ingredients}
+                           totalPrice={this.state.totalPrice}/>}/>
             </div>
 
         );
