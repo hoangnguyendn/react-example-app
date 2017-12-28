@@ -188,7 +188,6 @@ class ContactData extends Component {
                 <Button disabled={this.state.submit.disabled} action={'Success'} clicked={this.submitOrder}>
                     Submit
                 </Button>
-
             </div>
         );
     }
