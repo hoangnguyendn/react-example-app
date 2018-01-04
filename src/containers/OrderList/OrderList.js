@@ -9,7 +9,13 @@ class OrderList extends Component {
     };
 
     componentDidMount() {
-        axios.get('/orders.json').then(res => {
+        let accessToken = localStorage.getItem('token');
+        console.log(accessToken);
+        const headers = {
+                'Content-Type': 'application/json',
+                "Authorization": "Bearer " + accessToken
+            };
+        axios.get('/orders.json', {headers: headers}).then(res => {
             let list = res.data;
             list = Object.keys(list).map(l => {
                 return list[l];
@@ -25,8 +31,6 @@ class OrderList extends Component {
                 <div className={classCSS.OrderList}><Loader/></div>
                 <div className={classCSS.OrderList}><Loader/></div>
             </div>
-
-
         );
         if (this.state.list.length > 0) {
             list = this.state.list.map((l, index) => {

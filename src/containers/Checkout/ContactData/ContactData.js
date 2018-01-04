@@ -6,6 +6,11 @@ import Modal from '../../../components/UI/Modal/Modal';
 import Spinner from '../../../components/UI/Spinner/Spinner';
 import Input from '../../../components/UI/Input/Input';
 import WithErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler';
+import {connect} from 'react-redux';
+import {
+    purchaseBurgerOnload,
+    sendOrder
+} from '../../../store/actions/order';
 
 class ContactData extends Component {
 
@@ -72,26 +77,17 @@ class ContactData extends Component {
                         {value: 'Bike', display: 'Bike'}
                     ],
                 },
+                valid: true,
                 value: 'Plane'
             }
         },
         submit: {
             disabled: true
-        },
-        totalPrice: null,
-        ingredients: null,
-        loading: false,
-        success: false
+        }
     };
 
     componentDidMount() {
-        //console.log(this.props);
-        if (typeof this.props.ingredients !== "undefined") {
-            this.setState({
-                ingredients: this.props.ingredients,
-                totalPrice: this.props.totalPrice
-            })
-        }
+        this.props.onLoad();
     }
 
     checkValidation = (values, rules) => {
@@ -124,14 +120,32 @@ class ContactData extends Component {
         orderForm[type].valid = this.checkValidation(event.target.value, orderForm[type].validation);
         orderForm[type].focus = true;
         //console.log(orderForm[type]);
-        this.setState({orderForm: orderForm});
+        let formIsValid = true;
+        for (let element in orderForm) {
+            // if (element === 'deliveryMethod') {
+            //     break;
+            // }
+            // if (!this.state.orderForm[element].valid) {
+            //     this.setState({submit: {disabled: true}});
+            //     continue;
+            // }
+            //
+            // this.setState({submit: {disabled: false}})
+            formIsValid = orderForm[element].valid && formIsValid;
+        }
+
+        this.setState({
+            orderForm: orderForm,
+            submit: {
+                disabled: !formIsValid
+            }
+        });
     };
 
     submitOrder = () => {
-        this.setState({loading: true});
         const order = {
-            ingredients: this.state.ingredients,
-            price: this.state.totalPrice,
+            ingredients: this.props.ingredients,
+            price: this.props.totalPrice,
             customer: {
                 name: this.state.orderForm.name.value,
                 email: this.state.orderForm.email.value,
@@ -140,20 +154,24 @@ class ContactData extends Component {
             },
             deliveryMethod: this.state.orderForm.deliveryMethod.value
         };
-        axios.post('/orders.json', order)
-            .then(res => {
-                this.setState({
-                    loading: false,
-                });
-                setTimeout(() => {
-                    this.props.history.push('/');
-                }, 3000)
-            })
-            .catch(err => {
-                this.setState({
-                    loading: false
-                });
-            });
+        // axios.post('/orders.json', order)
+        //     .then(res => {
+        //         this.setState({
+        //             loading: false,
+        //         });
+        //         setTimeout(() => {
+        //             this.props.history.push('/');
+        //         }, 3000)
+        //     })
+        //     .catch(err => {
+        //         this.setState({
+        //             loading: false
+        //         });
+        //     });
+        this.props.onOrder(order);
+        setTimeout(() => {
+            this.props.history.push('/');
+        }, 3000)
     };
 
     render() {
@@ -167,11 +185,14 @@ class ContactData extends Component {
         //console.log(formElementArray);
         return (
             <div className={classCSS.ContactData}>
-                <Modal show={this.state.loading}>
+                <Modal show={this.props.loading}>
                     <Spinner/>
                 </Modal>
-                <Modal show={this.state.success}>
+                <Modal show={this.props.orderSuccess}>
                     <b>Order Successfully</b>
+                </Modal>
+                <Modal show={this.props.error}>
+                    <b>Something went wrong!!!</b>
                 </Modal>
                 <h4>Please fill out this form</h4>
                 {formElementArray.map(form => {
@@ -195,4 +216,21 @@ class ContactData extends Component {
 
 }
 
-export default WithErrorHandler(ContactData, axios);
+
+const mapStateToProps = state => {
+    return {
+        ...state.burger,
+        ...state.order
+    }
+};
+
+const mapDispatchToProps = dispatch => {
+    return ({
+        onLoad: () =>
+            dispatch(purchaseBurgerOnload()),
+        onOrder: order =>
+            dispatch(sendOrder(order))
+    });
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(WithErrorHandler(ContactData, axios));
